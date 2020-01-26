@@ -3,6 +3,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
+const _ = require("lodash");
 
 const homeContent = "Apple wants a weekend or expensive dui want to decorate. Which is always the creator nor the duration of her life. Carrots carrots just been running a lot. Product lived in this. Financing yeast rice vegetarian or clinical portal. That they are not members, nor members of the Donec ultrices tincidunt arcu. A lot of television targeted at the undergraduate nutrition. Of life, and the mountains shall be born, ultricies quis, congue in magnis dis parturient. Adipiscing elit ut aliquam purus sit amet luctus venenatis lectus. The founder of basketball and football propaganda graduated drink at the arc. Performance skirt smile at any hate for hate vulputate. Running a lot of television targeted at the undergraduate nutrition.";
 const aboutContent = "Hac habitasse platea dictumst vestibulum rhoncus est pellentesque. Dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Non diam phasellus vestibulum lorem sed. Platea dictumst quisque sagittis purus sit. Egestas sed sed risus pretium quam vulputate dignissim suspendisse. Mauris in aliquam sem fringilla. Semper risus in hendrerit gravida rutrum quisque non tellus orci. Amet massa vitae tortor condimentum lacinia quis vel eros. Enim ut tellus elementum sagittis vitae. Mauris ultrices eros in cursus turpis massa tincidunt dui.";
@@ -15,21 +16,45 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
+let Posts = [];
 
 app.get("/",(req,res)=>{
-  res.render("home",{"homeContent":homeContent});
+  res.render("home",{
+    homeContent:homeContent,
+    Posts:Posts
+  });
 });
 
 app.get("/contact",(req,res)=>{
-  res.render("contact",{"contactContent":contactContent});
+  res.render("contact",{contactContent:contactContent});
 });
 
 app.get("/about",(req,res)=>{
-  res.render("about",{"aboutContent":aboutContent});
+  res.render("about",{aboutContent:aboutContent});
 });
 
+app.get("/compose",(req,res)=>{
+  res.render("compose");
+});
 
+app.post("/compose",(req,res)=>{
+  const post = {
+    title: req.body.postTitle,
+    content: req.body.postBody
+  };
+  Posts.push(post);
+  res.redirect("/")
+});
 
+app.get("/posts/:address",(req,res)=>{
+  const address= _.lowerCase(req.params.address);
+
+  Posts.forEach(function(post){
+    if(_.lowerCase(post.title)==address){
+      res.render("post",{post});
+    }
+  });
+});
 
 const port=3000;
 const host='localhost';
